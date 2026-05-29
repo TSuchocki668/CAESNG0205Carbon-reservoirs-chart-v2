@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Earth's Carbon Reservoirs</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "Anthropic Sans", system-ui, -apple-system, sans-serif;
+  background: transparent;
+  height: calc(100vh - 28px);
+  display: flex;
+  flex-direction: column;
+  padding: 14px 18px 10px;
+}
+.chart-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: #2C2C2A;
+  margin-bottom: 8px;
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #2C2C2A;
+}
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.chart-wrap { position: relative; flex: 1; min-height: 180px; }
+.info-panel {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 0.5px solid #B4B2A9;
+  background: #F5F4F0;
+  font-size: 12px;
+  color: #2C2C2A;
+  line-height: 1.6;
+  min-height: 48px;
+  transition: all 0.2s;
+}
+.info-panel .info-name {
+  font-weight: 500;
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: #2C2C2A;
+}
+.note {
+  font-size: 11px;
+  color: #2C2C2A;
+  margin-top: 8px;
+  line-height: 1.6;
+}
+.scale-note {
+  font-size: 11px;
+  color: #2C2C2A;
+  margin-top: 4px;
+  line-height: 1.6;
+  padding: 6px 10px;
+  background: #EAF3DE;
+  border-radius: 4px;
+  border-left: 3px solid #639922;
+}
+</style>
+</head>
+<body>
+
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Earth's major carbon reservoirs: horizontal bar chart showing relative sizes in gigatons of carbon on a logarithmic scale. Deep ocean is largest at 37,000 GtC, followed by fossil fuels at 3,700, soils at 1,700, surface ocean at 900, atmosphere at 860, and terrestrial plants at 620.</h2>
+
+<p class="chart-title">Earth's Major Carbon Reservoirs (GtC)</p>
+
+<div class="legend" aria-hidden="true">
+  <span class="legend-item"><span class="swatch" style="background:#1D9E75"></span>Atmosphere</span>
+  <span class="legend-item"><span class="swatch" style="background:#639922"></span>Terrestrial plants</span>
+  <span class="legend-item"><span class="swatch" style="background:#BA7517"></span>Soils</span>
+  <span class="legend-item"><span class="swatch" style="background:#378ADD"></span>Ocean</span>
+  <span class="legend-item"><span class="swatch" style="background:#888780"></span>Fossil fuels</span>
+</div>
+
+<div class="chart-wrap">
+  <canvas id="chart"
+    role="img"
+    aria-label="Horizontal bar chart of Earth's major carbon reservoirs. Deep ocean 37,000 GtC. Fossil fuels 3,700. Soils 1,700. Surface ocean 900. Atmosphere 860. Terrestrial plants 620.">
+    Carbon reservoirs from largest to smallest: Deep ocean 37,000 GtC; Fossil fuels 3,700; Soils 1,700; Surface ocean 900; Atmosphere 860; Terrestrial plants 620.
+  </canvas>
+</div>
+
+<div class="info-panel" id="infoPanel">
+  <div class="info-name" id="infoName">Click any bar to learn more about that reservoir.</div>
+  <div id="infoBody"></div>
+</div>
+
+<p class="scale-note">This chart uses a logarithmic scale on the x-axis. On a regular scale, the deep ocean bar would be about 60 times longer than the terrestrial plants bar, making the smaller reservoirs nearly invisible. The logarithmic scale compresses the larger values so that all six reservoirs are readable at once. Each major gridline represents a tenfold increase in carbon stored.</p>
+
+<p class="note">Sedimentary rock (~100,000,000 GtC) is excluded because it exchanges carbon only on geological timescales of millions of years. Pre-industrial atmospheric carbon was 590 GtC (280 ppm). Current atmospheric carbon is approximately 860 GtC (420 ppm). Sources: Global Carbon Project (2023) and IPCC Sixth Assessment Report (2021).</p>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const items = [
+  {
+    label: 'Terrestrial plants',
+    value: 620,
+    color: '#639922', border: '#3B6D11',
+    name: 'Terrestrial plants — 620 GtC',
+    info: 'All living land plants together store about 620 gigatons of carbon, mostly in wood. This is the carbon you can see — tree trunks, branches, leaves, and roots above and just below the soil surface. Carbon enters this reservoir through photosynthesis and returns to the atmosphere through respiration and decomposition when plants die.'
+  },
+  {
+    label: 'Atmosphere (current)',
+    value: 860,
+    color: '#1D9E75', border: '#0F6E56',
+    name: 'Atmosphere — 860 GtC (current)',
+    info: 'The atmosphere currently holds about 860 gigatons of carbon, almost entirely as carbon dioxide. Before large-scale fossil fuel burning began around 1750, this reservoir held approximately 590 GtC (280 ppm). The increase to 860 GtC (420 ppm) reflects carbon transferred from fossil fuels and land into the atmosphere faster than natural sinks can absorb it.'
+  },
+  {
+    label: 'Surface ocean',
+    value: 900,
+    color: '#378ADD', border: '#185FA5',
+    name: 'Surface ocean — 900 GtC',
+    info: 'The surface ocean (roughly the top 200 meters) holds about 900 gigatons of carbon, mostly as dissolved carbon dioxide and bicarbonate ions. The surface ocean exchanges carbon with the atmosphere continuously. Currently it absorbs a net 3 GtC per year more than it releases, making it a significant carbon sink. Warmer water holds less dissolved CO2, which affects this exchange rate.'
+  },
+  {
+    label: 'Soils',
+    value: 1700,
+    color: '#BA7517', border: '#854F0B',
+    name: 'Soils — 1,700 GtC',
+    info: 'Soils store nearly three times more carbon than all living terrestrial plants combined. Most of this carbon exists as decomposing organic matter, microbial biomass, root material, and stable chemical compounds that accumulate over decades to millennia in the soil profile. When soils are disturbed by tillage, drainage, or land clearing, decomposition accelerates and stored carbon is released to the atmosphere.'
+  },
+  {
+    label: 'Fossil fuels',
+    value: 3700,
+    color: '#888780', border: '#5F5E5A',
+    name: 'Fossil fuels — 3,700 GtC (recoverable)',
+    info: 'Recoverable fossil fuels hold approximately 3,700 gigatons of carbon, formed from organic matter buried and compressed over hundreds of millions of years. Before industrial extraction, this reservoir was effectively sealed off from the active carbon cycle. Combustion moves this geologically ancient carbon into the atmosphere in decades, far faster than natural processes can absorb it.'
+  },
+  {
+    label: 'Deep ocean',
+    value: 37000,
+    color: '#185FA5', border: '#0C447C',
+    name: 'Deep ocean — 37,000 GtC',
+    info: 'The deep ocean is by far the largest active carbon reservoir, holding about 37,000 gigatons. Carbon reaches the deep ocean through two pathways: cold, dense surface water sinking and carrying dissolved carbon downward (the physical pump), and sinking particles of dead marine organisms (the biological pump). Carbon stored in the deep ocean can remain there for centuries to millennia before returning to the surface.'
+  }
+];
+
+const chart = new Chart(document.getElementById('chart'), {
+  type: 'bar',
+  data: {
+    labels: items.map(i => i.label),
+    datasets: [{
+      data: items.map(i => i.value),
+      backgroundColor: items.map(i => i.color),
+      borderColor: items.map(i => i.border),
+      borderWidth: 0.5,
+      borderRadius: 3,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 700, easing: 'easeOutQuart' },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#ffffff',
+        titleColor: '#2C2C2A',
+        bodyColor: '#5F5E5A',
+        borderColor: 'rgba(0,0,0,0.12)',
+        borderWidth: 0.5,
+        padding: 10,
+        cornerRadius: 6,
+        callbacks: {
+          label: ctx => {
+            const v = ctx.raw;
+            const formatted = v >= 1000
+              ? v.toLocaleString() + ' GtC'
+              : v + ' GtC';
+            return '  ' + formatted + '  —  click bar for details';
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        type: 'logarithmic',
+        min: 400,
+        max: 55000,
+        afterBuildTicks: axis => {
+          axis.ticks = [500, 1000, 2000, 5000, 10000, 20000, 40000].map(v => ({ value: v }));
+        },
+        grid: { color: 'rgba(0,0,0,0.07)' },
+        border: { color: 'rgba(0,0,0,0.07)' },
+        ticks: {
+          color: '#5F5E5A',
+          font: { size: 11 },
+          callback: v => v >= 1000 ? (v/1000).toFixed(0) + 'k' : v
+        },
+        title: {
+          display: true,
+          text: 'gigatons of carbon (GtC)  —  logarithmic scale',
+          color: '#2C2C2A',
+          font: { size: 11 }
+        }
+      },
+      y: {
+        grid: { display: false },
+        border: { display: false },
+        ticks: { color: '#2C2C2A', font: { size: 12 }, padding: 4 }
+      }
+    },
+    onClick: (e, els) => {
+      if (!els.length) return;
+      const item = items[els[0].index];
+      document.getElementById('infoName').textContent = item.name;
+      document.getElementById('infoBody').textContent = item.info;
+      if (typeof sendPrompt === 'function') {
+        sendPrompt('Tell me more about the ' + item.label.toLowerCase() + ' carbon reservoir and how it connects to the other reservoirs in the carbon cycle.');
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
