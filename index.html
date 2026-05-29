@@ -9,10 +9,10 @@
 body {
   font-family: "Anthropic Sans", system-ui, -apple-system, sans-serif;
   background: transparent;
-  height: calc(100vh - 28px);
   display: flex;
   flex-direction: column;
   padding: 14px 18px 10px;
+  gap: 6px;
 }
 .chart-title {
   font-size: 15px;
@@ -30,9 +30,8 @@ body {
 }
 .legend-item { display: flex; align-items: center; gap: 5px; }
 .swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
-.chart-wrap { position: relative; flex: 1; min-height: 180px; }
+.chart-wrap { position: relative; height: 340px; min-height: 180px; }
 .info-panel {
-  margin-top: 10px;
   padding: 10px 14px;
   border-radius: 6px;
   border: 0.5px solid #B4B2A9;
@@ -49,21 +48,28 @@ body {
   margin-bottom: 4px;
   color: #2C2C2A;
 }
-.note {
-  font-size: 11px;
-  color: #2C2C2A;
-  margin-top: 8px;
-  line-height: 1.6;
-}
 .scale-note {
-  font-size: 11px;
+  font-size: 12px;
   color: #2C2C2A;
-  margin-top: 4px;
   line-height: 1.6;
   padding: 6px 10px;
   background: #EAF3DE;
   border-radius: 4px;
   border-left: 3px solid #639922;
+}
+.note-box {
+  background: #F5F4F0;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 12px;
+  color: #2C2C2A;
+  line-height: 1.6;
+}
+.note-box strong { font-weight: 600; }
+.tagline {
+  font-size: 12px;
+  color: #666;
+  font-style: italic;
 }
 </style>
 </head>
@@ -96,7 +102,11 @@ body {
 
 <p class="scale-note">This chart uses a logarithmic scale on the x-axis. On a regular scale, the deep ocean bar would be about 60 times longer than the terrestrial plants bar, making the smaller reservoirs nearly invisible. The logarithmic scale compresses the larger values so that all six reservoirs are readable at once. Each major gridline represents a tenfold increase in carbon stored.</p>
 
-<p class="note">Sedimentary rock (~100,000,000 GtC) is excluded because it exchanges carbon only on geological timescales of millions of years. Pre-industrial atmospheric carbon was 590 GtC (280 ppm). Current atmospheric carbon is approximately 860 GtC (420 ppm). Sources: Global Carbon Project (2023) and IPCC Sixth Assessment Report (2021).</p>
+<div class="note-box">
+  <strong>Chart notes:</strong> Sedimentary rock (~100,000,000 GtC) is excluded because it exchanges carbon only on geological timescales of millions of years. Pre-industrial atmospheric carbon was 590 GtC (280 ppm). Current atmospheric carbon is approximately 860 GtC (420 ppm). Sources: Global Carbon Project (2023) and IPCC Sixth Assessment Report (2021).
+</div>
+
+<p class="tagline">Environmental Science through Nature's Genius</p>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
